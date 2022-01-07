@@ -14,6 +14,7 @@ class Yakit < Formula
       # fetch latest yakit version
       system("export LATEST_YAKIT_VERSION=`curl -sS -L  https://yaklang.oss-cn-beijing.aliyuncs.com/yak/latest/yakit-version.txt`")
       system("wget https://yaklang.oss-cn-beijing.aliyuncs.com/yak/${LATEST_YAKIT_VERSION}/Yakit-${LATEST_YAKIT_VERSION}-darwin-arm64.dmg -O ~/Download")
+      
     end
   
     test do
