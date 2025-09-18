@@ -63,6 +63,17 @@ This repository includes automated version checking via GitHub Actions:
 - **Validation**: Verifies cask syntax and download URLs before creating PRs
 - **Manual Trigger**: Can be manually triggered from GitHub Actions tab
 
+### Setup
+
+Before using the automation, you need to configure a GitHub token:
+
+1. Go to **Settings** → **Secrets and variables** → **Actions**
+2. Click **"New repository secret"**
+3. Name: `GH_TOKEN`
+4. Value: Your [GitHub Personal Access Token](https://github.com/settings/tokens)
+   - Required scopes: `repo`, `workflow`
+5. Click **"Add secret"**
+
 ### Workflow Details
 
 The automation workflow (`.github/workflows/update-yakit.yml`):

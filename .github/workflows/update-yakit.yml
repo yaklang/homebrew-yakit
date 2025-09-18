@@ -20,7 +20,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GH_TOKEN }}
 
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
@@ -84,7 +84,7 @@ jobs:
       if: steps.check_version.outputs.needs_update == 'true'
       uses: peter-evans/create-pull-request@v5
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GH_TOKEN }}
         commit-message: |
           chore: update Yakit to version ${{ steps.check_version.outputs.latest_version }}
 
