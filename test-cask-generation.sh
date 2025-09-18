@@ -84,40 +84,46 @@ if [ ! -f "$VERSIONED_CASK" ]; then
   
   echo ""
   echo "🔍 Syntax validation:"
-  if command -v brew >/dev/null 2>&1; then
-    echo "Setting up temporary tap for testing..."
-    # 创建临时目录结构
-    TEMP_TAP_DIR=$(mktemp -d)
-    mkdir -p "$TEMP_TAP_DIR/Casks"
-    cp "$VERSIONED_CASK" "$TEMP_TAP_DIR/Casks/"
-    
-    # 添加临时 tap
-    brew tap --force-auto-update homebrew/test-yakit "file://$TEMP_TAP_DIR"
-    
-    echo "Running: brew audit --cask homebrew/test-yakit/yakit@$LATEST_VERSION"
-    if brew audit --cask --strict "homebrew/test-yakit/yakit@$LATEST_VERSION" 2>/dev/null; then
-      echo "✅ Strict cask audit passed!"
-    elif brew audit --cask "homebrew/test-yakit/yakit@$LATEST_VERSION" 2>/dev/null; then
-      echo "✅ Basic cask audit passed!"
-    else
-      echo "⚠️  Cask audit failed, checking Ruby syntax..."
-      if ruby -c "$VERSIONED_CASK" >/dev/null 2>&1; then
-        echo "✅ Ruby syntax is valid (audit may fail due to missing dependencies)"
-      else
-        echo "❌ Ruby syntax error detected"
-      fi
-    fi
-    
-    # 清理临时 tap
-    brew untap homebrew/test-yakit 2>/dev/null || true
-    rm -rf "$TEMP_TAP_DIR"
+  
+  # Ruby 语法检查
+  echo "📋 Checking Ruby syntax..."
+  if ruby -c "$VERSIONED_CASK" >/dev/null 2>&1; then
+    echo "✅ Ruby syntax is valid"
   else
-    echo "⚠️  Homebrew not available, running Ruby syntax check..."
-    if ruby -c "$VERSIONED_CASK" >/dev/null 2>&1; then
-      echo "✅ Ruby syntax is valid"
+    echo "❌ Ruby syntax error detected"
+    return 1
+  fi
+  
+  # 检查下载 URL 的可用性
+  if command -v curl >/dev/null 2>&1; then
+    echo "🌐 Testing download URLs..."
+    
+    ARM64_URL="https://oss-qn.yaklang.com/yak/$LATEST_VERSION/Yakit-$LATEST_VERSION-darwin-arm64.dmg"
+    X64_URL="https://oss-qn.yaklang.com/yak/$LATEST_VERSION/Yakit-$LATEST_VERSION-darwin-x64.dmg"
+    
+    if curl -I "$ARM64_URL" >/dev/null 2>&1; then
+      echo "✅ ARM64 download URL is accessible"
     else
-      echo "❌ Ruby syntax error detected"
+      echo "⚠️  ARM64 download URL may not be accessible"
     fi
+    
+    if curl -I "$X64_URL" >/dev/null 2>&1; then
+      echo "✅ x64 download URL is accessible"
+    else
+      echo "⚠️  x64 download URL may not be accessible"
+    fi
+  fi
+  
+  # Homebrew dry-run 测试（如果可用）
+  if command -v brew >/dev/null 2>&1; then
+    echo "🧪 Testing Homebrew dry-run..."
+    if brew install --cask "./$VERSIONED_CASK" --dry-run 2>/dev/null; then
+      echo "✅ Homebrew dry-run successful"
+    else
+      echo "⚠️  Homebrew dry-run failed (may be due to environment or dependencies)"
+    fi
+  else
+    echo "ℹ️  Homebrew not available, skipping dry-run test"
   fi
   
   echo ""
