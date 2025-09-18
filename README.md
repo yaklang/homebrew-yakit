@@ -78,19 +78,30 @@ Before using the automation, you need to configure a GitHub token:
 
 ### Version Files
 
-The repository maintains local version files for stability:
+The repository maintains local version files for stability and reliability:
 
 - **`latest-version.txt`**: Contains the current latest version number
 - **`history-versions.txt`**: Maintains version history with dates and sources
 
+**Data Sources:**
+- Primary: [GitHub Releases API](https://api.github.com/repos/yaklang/yakit/releases/latest)
+- Backup: `https://oss-qn.yaklang.com/yak/latest/yakit-version.txt`
+
 ### Workflow Details
 
 The automation workflow (`.github/workflows/update-yakit.yml`):
-1. Fetches the latest version from the official Yakit version endpoint
-2. Compares with the local `latest-version.txt` file
-3. Updates local version files if a newer version is found
-4. Validates the cask syntax
-5. Automatically commits and pushes changes to the main branch
+1. **Fetches latest version** from GitHub Releases API (with backup fallback)
+2. **Compares versions** with local `latest-version.txt` file
+3. **Updates version files** if newer version is found:
+   - Updates `latest-version.txt` with new version
+   - Adds entry to `history-versions.txt` with date and source
+4. **Validates cask syntax** to ensure compatibility
+5. **Auto-commits and pushes** changes to main branch
+
+**Version Detection Logic:**
+- Primary: GitHub API (`/repos/yaklang/yakit/releases/latest`)
+- Fallback: Direct URL (`oss-qn.yaklang.com/yak/latest/yakit-version.txt`)
+- Local: Version files in repository
 
 ### Manual Update
 
