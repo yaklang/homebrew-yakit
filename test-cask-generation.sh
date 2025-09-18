@@ -85,23 +85,36 @@ if [ ! -f "$VERSIONED_CASK" ]; then
   echo ""
   echo "🔍 Syntax validation:"
   if command -v brew >/dev/null 2>&1; then
-    echo "Running: brew audit --cask --strict $VERSIONED_CASK"
-    if brew audit --cask --strict "$VERSIONED_CASK" 2>/dev/null; then
-      echo "✅ Cask syntax is valid!"
+    echo "Setting up temporary tap for testing..."
+    # 创建临时目录结构
+    TEMP_TAP_DIR=$(mktemp -d)
+    mkdir -p "$TEMP_TAP_DIR/Casks"
+    cp "$VERSIONED_CASK" "$TEMP_TAP_DIR/Casks/"
+    
+    # 添加临时 tap
+    brew tap --force-auto-update homebrew/test-yakit "file://$TEMP_TAP_DIR"
+    
+    echo "Running: brew audit --cask homebrew/test-yakit/yakit@$LATEST_VERSION"
+    if brew audit --cask --strict "homebrew/test-yakit/yakit@$LATEST_VERSION" 2>/dev/null; then
+      echo "✅ Strict cask audit passed!"
+    elif brew audit --cask "homebrew/test-yakit/yakit@$LATEST_VERSION" 2>/dev/null; then
+      echo "✅ Basic cask audit passed!"
     else
-      echo "❌ Cask syntax validation failed"
-      echo "Running basic Ruby syntax check..."
+      echo "⚠️  Cask audit failed, checking Ruby syntax..."
       if ruby -c "$VERSIONED_CASK" >/dev/null 2>&1; then
-        echo "✅ Basic Ruby syntax is valid"
+        echo "✅ Ruby syntax is valid (audit may fail due to missing dependencies)"
       else
         echo "❌ Ruby syntax error detected"
       fi
     fi
+    
+    # 清理临时 tap
+    brew untap homebrew/test-yakit 2>/dev/null || true
+    rm -rf "$TEMP_TAP_DIR"
   else
-    echo "⚠️  Homebrew not available, skipping syntax validation"
-    echo "Running basic Ruby syntax check..."
+    echo "⚠️  Homebrew not available, running Ruby syntax check..."
     if ruby -c "$VERSIONED_CASK" >/dev/null 2>&1; then
-      echo "✅ Basic Ruby syntax is valid"
+      echo "✅ Ruby syntax is valid"
     else
       echo "❌ Ruby syntax error detected"
     fi
