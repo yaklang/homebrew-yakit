@@ -55,6 +55,8 @@ brew install yakit
 - ✅ **Version Flexibility**: Support for latest, specific, or default versions
 - ✅ **Auto Updates**: Built-in livecheck for version updates + GitHub Actions automation
 - ✅ **Clean Uninstall**: Includes zap stanza for complete removal
+- ✅ **CI/CD Integration**: macOS runner for stable Homebrew testing
+- ✅ **Upstream Ready**: Automated PR preparation for homebrew-cask
 
 ## Automation
 
@@ -82,6 +84,8 @@ The repository maintains local version files for stability and reliability:
 
 - **`latest-version.txt`**: Contains the current latest version number
 - **`history-versions.txt`**: Maintains version history with dates and sources
+- **`Casks/yakit.rb`**: Local development cask with advanced features
+- **`Casks/yakit-upstream.rb`**: Standard cask for homebrew-cask upstream submission
 
 **Data Sources:**
 - Primary: [GitHub Releases API](https://api.github.com/repos/yaklang/yakit/releases/latest)
@@ -95,8 +99,11 @@ The automation workflow (`.github/workflows/update-yakit.yml`):
 3. **Updates version files** if newer version is found:
    - Updates `latest-version.txt` with new version
    - Adds entry to `history-versions.txt` with date and source
-4. **Validates cask syntax** to ensure compatibility
-5. **Auto-commits and pushes** changes to main branch
+   - Updates `yakit-upstream.rb` for homebrew-cask submission
+4. **Tests installation** on macOS runner with actual Homebrew
+5. **Validates cask syntax** using `brew audit --cask --strict`
+6. **Prepares upstream PR** to homebrew-cask repository
+7. **Auto-commits and pushes** changes to main branch
 
 **Version Detection Logic:**
 - Primary: GitHub API (`/repos/yaklang/yakit/releases/latest`)

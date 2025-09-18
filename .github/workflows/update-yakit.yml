@@ -14,7 +14,7 @@ on:
 
 jobs:
   update-yakit:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout repository
@@ -113,20 +113,48 @@ jobs:
         echo "📚 Recent history-versions.txt entries:"
         tail -3 history-versions.txt
 
+        # 更新上游 cask 文件版本
+        echo "📝 Updating upstream cask file..."
+        sed -i.bak "s/version \"[^\"]*\"/version \"$LATEST_VERSION\"/" Casks/yakit-upstream.rb
+        rm -f Casks/yakit-upstream.rb.bak
+        echo "✅ Updated yakit-upstream.rb"
+
         echo ""
         echo "🎉 Version files updated successfully!"
 
-    - name: Validate cask syntax
+    - name: Test and validate cask
       if: steps.check_version.outputs.needs_update == 'true'
       run: |
-        # 安装 homebrew (在 Ubuntu 上)
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-        # 添加 Homebrew 到 PATH
-        echo "/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_PATH
-
+        echo "🔍 Testing cask installation and validation..."
+        
         # 验证 cask 语法
-        brew cask audit Casks/yakit.rb
+        echo "📋 Validating cask syntax..."
+        brew audit --cask --strict Casks/yakit.rb
+        
+        # 测试本地 cask 安装
+        echo "🧪 Testing local cask installation..."
+        brew install --cask ./Casks/yakit.rb --dry-run
+        
+        # 如果 dry-run 成功，进行实际安装测试
+        if [ $? -eq 0 ]; then
+          echo "✅ Dry-run successful, attempting real installation..."
+          brew install --cask ./Casks/yakit.rb
+          
+          # 验证安装是否成功
+          if [ -d "/Applications/Yakit.app" ]; then
+            echo "✅ Yakit.app successfully installed to /Applications/"
+            
+            # 清理测试安装
+            echo "🧹 Cleaning up test installation..."
+            brew uninstall --cask yakit || true
+          else
+            echo "❌ Installation failed: Yakit.app not found in /Applications/"
+            exit 1
+          fi
+        else
+          echo "❌ Dry-run failed"
+          exit 1
+        fi
 
     - name: Commit and push changes
       if: steps.check_version.outputs.needs_update == 'true'
@@ -139,7 +167,7 @@ jobs:
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
         # 添加文件到 git
-        git add latest-version.txt history-versions.txt
+        git add latest-version.txt history-versions.txt Casks/yakit-upstream.rb
 
         # 检查是否有更改
         if git diff --staged --quiet; then
@@ -155,8 +183,60 @@ jobs:
 
         echo "✅ Successfully updated Yakit to version $LATEST_VERSION"
 
+    - name: Create PR to homebrew-cask (if needed)
+      if: steps.check_version.outputs.needs_update == 'true'
+      run: |
+        LATEST_VERSION="${{ steps.check_version.outputs.latest_version }}"
+        
+        echo "🍺 Preparing PR to homebrew-cask..."
+        
+        # 克隆 homebrew-cask 仓库
+        git clone https://github.com/Homebrew/homebrew-cask.git homebrew-cask-repo
+        cd homebrew-cask-repo
+        
+        # 配置 git
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        # 创建新分支
+        BRANCH_NAME="update-yakit-$LATEST_VERSION"
+        git checkout -b "$BRANCH_NAME"
+        
+        # 复制标准版本的 cask 文件到 homebrew-cask
+        cp ../Casks/yakit-upstream.rb Casks/yakit.rb
+        
+        # 验证在 homebrew-cask 环境中的语法
+        echo "📋 Validating cask in homebrew-cask environment..."
+        brew audit --cask --strict Casks/yakit.rb
+        
+        if [ $? -eq 0 ]; then
+          echo "✅ Cask validation successful in homebrew-cask"
+          
+          # 提交更改
+          git add Casks/yakit.rb
+          git commit -m "yakit: update to $LATEST_VERSION" -m "Automatic architecture detection (ARM64/Intel)" -m "Verified installation on macOS"
+          
+          echo "📝 Changes committed to branch $BRANCH_NAME"
+          echo "🔄 Ready for PR creation to homebrew-cask"
+          echo ""
+          echo "Manual steps to complete:"
+          echo "1. Push branch to your homebrew-cask fork"
+          echo "2. Create PR from your fork to Homebrew/homebrew-cask"
+          echo "3. Follow homebrew-cask contribution guidelines"
+          
+        else
+          echo "❌ Cask validation failed in homebrew-cask environment"
+          exit 1
+        fi
+
     - name: Notify on failure
       if: failure()
       run: |
         echo "❌ Yakit update workflow failed"
         echo "Please check the workflow logs for details"
+        echo ""
+        echo "Common issues to check:"
+        echo "- Network connectivity to GitHub API"
+        echo "- Cask syntax validation"
+        echo "- Download URL availability"
+        echo "- File permissions and git configuration"
