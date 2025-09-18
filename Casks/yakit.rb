@@ -2,7 +2,8 @@ cask "yakit" do
   # 支持多种版本选择：
   # 1. 环境变量 YAKIT_VERSION=latest - 从本地 latest-version.txt 读取
   # 2. 环境变量 YAKIT_VERSION=1.4.3-0801 - 指定特定版本
-  # 3. 默认从本地 latest-version.txt 读取最新版本
+  # 3. 环境变量 YAKIT_VERSION=remote - 从远程 URL 获取最新版本
+  # 4. 默认从本地 latest-version.txt 读取最新版本
   version do
     requested_version = ENV["YAKIT_VERSION"]
     if requested_version == "latest" || requested_version.nil? || requested_version.empty?
@@ -12,6 +13,22 @@ cask "yakit" do
       rescue
         # 如果读取失败，使用默认版本
         "1.4.4-0912"
+      end
+    elsif requested_version == "remote"
+      begin
+        # 从远程 URL 获取最新版本（用于特殊需求）
+        require "net/http"
+        require "uri"
+        url = URI.parse("https://oss-qn.yaklang.com/yak/latest/yakit-version.txt")
+        response = Net::HTTP.get(url)
+        response.strip
+      rescue
+        # 如果获取失败，回退到本地版本
+        begin
+          File.read(File.join(__dir__, "..", "latest-version.txt")).strip
+        rescue
+          "1.4.4-0912"
+        end
       end
     elsif requested_version
       requested_version

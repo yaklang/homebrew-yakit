@@ -119,6 +119,62 @@ jobs:
         rm -f Casks/yakit-upstream.rb.bak
         echo "✅ Updated yakit-upstream.rb"
 
+        # 创建版本化的 cask 文件
+        echo "📝 Creating versioned cask file..."
+        # 提取版本号部分（1.4.4-0912 -> 1.4.4）和日期部分（0912）
+        VERSION_PART=$(echo "$LATEST_VERSION" | cut -d'-' -f1)
+        DATE_PART=$(echo "$LATEST_VERSION" | cut -d'-' -f2)
+        
+        # 使用完整版本号（包含日期）作为 cask 名称
+        VERSIONED_CASK="Casks/yakit@$LATEST_VERSION.rb"
+        
+        # 格式化日期显示（0912 -> 2025-09-12）
+        YEAR="2025"
+        MONTH="${DATE_PART:0:2}"
+        DAY="${DATE_PART:2:2}"
+        FORMATTED_DATE="$YEAR-$MONTH-$DAY"
+        
+        # 复制模板并替换版本
+        cat > "$VERSIONED_CASK" << EOF
+cask "yakit@$LATEST_VERSION" do
+  version "$LATEST_VERSION"
+  sha256 :no_check
+
+  name "Yakit"
+  desc "Cyber Security ALL-IN-ONE Platform (Release Date: $FORMATTED_DATE)"
+  homepage "https://github.com/yaklang/yakit"
+
+  # 根据架构选择不同的下载 URL
+  on_arm do
+    url "https://oss-qn.yaklang.com/yak/#{version}/Yakit-#{version}-darwin-arm64.dmg"
+  end
+
+  on_intel do
+    url "https://oss-qn.yaklang.com/yak/#{version}/Yakit-#{version}-darwin-x64.dmg"
+  end
+
+  app "Yakit.app"
+
+  zap trash: [
+    "~/Library/Application Support/yakit",
+    "~/Library/Preferences/com.yaklang.yakit.plist",
+    "~/Library/Saved Application State/com.yaklang.yakit.savedState",
+  ]
+
+  caveats do
+    <<~EOS
+      This is Yakit version #{version} (Released: $FORMATTED_DATE).
+      For the latest version, use: brew install yaklang/yakit
+      
+      Note: Only one version of Yakit can be installed at a time.
+      To switch versions, uninstall the current version first:
+        brew uninstall --cask yakit
+    EOS
+  end
+end
+EOF
+        echo "✅ Created $VERSIONED_CASK"
+
         echo ""
         echo "🎉 Version files updated successfully!"
 
@@ -167,7 +223,7 @@ jobs:
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
         # 添加文件到 git
-        git add latest-version.txt history-versions.txt Casks/yakit-upstream.rb
+        git add latest-version.txt history-versions.txt Casks/yakit-upstream.rb Casks/yakit@*.rb
 
         # 检查是否有更改
         if git diff --staged --quiet; then

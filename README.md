@@ -12,7 +12,7 @@ This will automatically detect your system architecture (ARM64/M1/M2 or Intel) a
 
 ### Version Selection
 
-You can install different versions of Yakit using environment variables:
+You can install different versions of Yakit using multiple methods:
 
 #### Install Latest Version (Default)
 ```bash
@@ -21,19 +21,46 @@ brew install yaklang/yakit
 YAKIT_VERSION=latest brew install --cask yaklang/yakit
 ```
 
-#### Install Specific Version
+#### Install Specific Version by Version Number
 ```bash
+# Using environment variable
 YAKIT_VERSION=1.4.3-0801 brew install --cask yaklang/yakit
+
+# Using versioned cask (recommended)
+brew install --cask yaklang/yakit@1.4.4-0912
+brew install --cask yaklang/yakit@1.4.3-0801
+brew install --cask yaklang/yakit@1.4.2-0705
 ```
 
-#### Install Fixed Version
+#### Install Remote Latest Version
 ```bash
-YAKIT_VERSION=1.4.4-0912 brew install --cask yaklang/yakit
+# Bypass local cache and fetch from remote URL
+YAKIT_VERSION=remote brew install --cask yaklang/yakit
 ```
 
-> **Note**: Homebrew doesn't support `brew install yakit@version` syntax. Use environment variables instead.
+#### Available Versioned Casks
+
+- `yakit@1.4.4-0912` - Latest version (Released: 2025-09-12)
+- `yakit@1.4.3-0801` - Previous version (Released: 2025-08-01)  
+- `yakit@1.4.2-0705` - Older version (Released: 2025-07-05)
+
+#### Version Management
+
+```bash
+# List available versions
+brew search yaklang/yakit
+
+# Check installed version
+brew list --cask | grep yakit
+
+# Switch versions (uninstall current first)
+brew uninstall --cask yakit
+brew install --cask yaklang/yakit@1.4.3-0801
+```
+
+> **💡 Version Format**: Yakit uses date-based versioning: `X.Y.Z-MMDD` where `MMDD` represents the release month and day.
 >
-> **💡 Local Version Files**: The installer reads version information from local files (`latest-version.txt`) for improved stability and faster installation.
+> **📦 Local Version Files**: The main installer reads version information from local files (`latest-version.txt`) for improved stability and faster installation.
 
 ### Alternative Installation Methods
 
