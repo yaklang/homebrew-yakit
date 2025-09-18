@@ -1,0 +1,5 @@
+# Yakit Version History
+# Format: version|date|source
+1.4.4-0912|2025-01-18|initial
+1.4.3-0801|2025-01-15|previous
+1.4.2-0705|2025-01-10|previous

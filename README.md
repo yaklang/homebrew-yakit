@@ -14,8 +14,10 @@ This will automatically detect your system architecture (ARM64/M1/M2 or Intel) a
 
 You can install different versions of Yakit using environment variables:
 
-#### Install Latest Version
+#### Install Latest Version (Default)
 ```bash
+brew install yaklang/yakit
+# or explicitly
 YAKIT_VERSION=latest brew install --cask yaklang/yakit
 ```
 
@@ -24,14 +26,14 @@ YAKIT_VERSION=latest brew install --cask yaklang/yakit
 YAKIT_VERSION=1.4.3-0801 brew install --cask yaklang/yakit
 ```
 
-#### Install Default Version (1.4.4-0912)
+#### Install Fixed Version
 ```bash
-brew install yaklang/yakit
-# or
 YAKIT_VERSION=1.4.4-0912 brew install --cask yaklang/yakit
 ```
 
 > **Note**: Homebrew doesn't support `brew install yakit@version` syntax. Use environment variables instead.
+>
+> **💡 Local Version Files**: The installer reads version information from local files (`latest-version.txt`) for improved stability and faster installation.
 
 ### Alternative Installation Methods
 
@@ -74,14 +76,21 @@ Before using the automation, you need to configure a GitHub token:
    - Required scopes: `repo`, `workflow`
 5. Click **"Add secret"**
 
+### Version Files
+
+The repository maintains local version files for stability:
+
+- **`latest-version.txt`**: Contains the current latest version number
+- **`history-versions.txt`**: Maintains version history with dates and sources
+
 ### Workflow Details
 
 The automation workflow (`.github/workflows/update-yakit.yml`):
 1. Fetches the latest version from the official Yakit version endpoint
-2. Compares with the current version in the cask
-3. Updates the cask file if a newer version is found
+2. Compares with the local `latest-version.txt` file
+3. Updates local version files if a newer version is found
 4. Validates the cask syntax
-5. Creates a pull request for review
+5. Automatically commits and pushes changes to the main branch
 
 ### Manual Update
 
