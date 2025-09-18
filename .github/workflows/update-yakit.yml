@@ -134,46 +134,51 @@ jobs:
         DAY="${DATE_PART:2:2}"
         FORMATTED_DATE="$YEAR-$MONTH-$DAY"
         
-        # 复制模板并替换版本
-        cat > "$VERSIONED_CASK" << EOF
-cask "yakit@$LATEST_VERSION" do
-  version "$LATEST_VERSION"
-  sha256 :no_check
-
-  name "Yakit"
-  desc "Cyber Security ALL-IN-ONE Platform (Release Date: $FORMATTED_DATE)"
-  homepage "https://github.com/yaklang/yakit"
-
-  # 根据架构选择不同的下载 URL
-  on_arm do
-    url "https://oss-qn.yaklang.com/yak/#{version}/Yakit-#{version}-darwin-arm64.dmg"
-  end
-
-  on_intel do
-    url "https://oss-qn.yaklang.com/yak/#{version}/Yakit-#{version}-darwin-x64.dmg"
-  end
-
-  app "Yakit.app"
-
-  zap trash: [
-    "~/Library/Application Support/yakit",
-    "~/Library/Preferences/com.yaklang.yakit.plist",
-    "~/Library/Saved Application State/com.yaklang.yakit.savedState",
-  ]
-
-  caveats do
-    <<~EOS
-      This is Yakit version #{version} (Released: $FORMATTED_DATE).
-      For the latest version, use: brew install yaklang/yakit
-      
-      Note: Only one version of Yakit can be installed at a time.
-      To switch versions, uninstall the current version first:
-        brew uninstall --cask yakit
-    EOS
-  end
-end
-EOF
-        echo "✅ Created $VERSIONED_CASK"
+        # 检查版本化 cask 是否已存在
+        if [ ! -f "$VERSIONED_CASK" ]; then
+          echo "Creating new versioned cask: $VERSIONED_CASK"
+          
+          # 创建版本化 cask 文件内容
+          echo "cask \"yakit@$LATEST_VERSION\" do" > "$VERSIONED_CASK"
+          echo "  version \"$LATEST_VERSION\"" >> "$VERSIONED_CASK"
+          echo "  sha256 :no_check" >> "$VERSIONED_CASK"
+          echo "" >> "$VERSIONED_CASK"
+          echo "  name \"Yakit\"" >> "$VERSIONED_CASK"
+          echo "  desc \"Cyber Security ALL-IN-ONE Platform (Release Date: $FORMATTED_DATE)\"" >> "$VERSIONED_CASK"
+          echo "  homepage \"https://github.com/yaklang/yakit\"" >> "$VERSIONED_CASK"
+          echo "" >> "$VERSIONED_CASK"
+          echo "  # 根据架构选择不同的下载 URL" >> "$VERSIONED_CASK"
+          echo "  on_arm do" >> "$VERSIONED_CASK"
+          echo "    url \"https://oss-qn.yaklang.com/yak/#{version}/Yakit-#{version}-darwin-arm64.dmg\"" >> "$VERSIONED_CASK"
+          echo "  end" >> "$VERSIONED_CASK"
+          echo "" >> "$VERSIONED_CASK"
+          echo "  on_intel do" >> "$VERSIONED_CASK"
+          echo "    url \"https://oss-qn.yaklang.com/yak/#{version}/Yakit-#{version}-darwin-x64.dmg\"" >> "$VERSIONED_CASK"
+          echo "  end" >> "$VERSIONED_CASK"
+          echo "" >> "$VERSIONED_CASK"
+          echo "  app \"Yakit.app\"" >> "$VERSIONED_CASK"
+          echo "" >> "$VERSIONED_CASK"
+          echo "  zap trash: [" >> "$VERSIONED_CASK"
+          echo "    \"~/Library/Application Support/yakit\"," >> "$VERSIONED_CASK"
+          echo "    \"~/Library/Preferences/com.yaklang.yakit.plist\"," >> "$VERSIONED_CASK"
+          echo "    \"~/Library/Saved Application State/com.yaklang.yakit.savedState\"," >> "$VERSIONED_CASK"
+          echo "  ]" >> "$VERSIONED_CASK"
+          echo "" >> "$VERSIONED_CASK"
+          echo "  caveats do" >> "$VERSIONED_CASK"
+          echo "    <<~EOS" >> "$VERSIONED_CASK"
+          echo "      This is Yakit version #{version} (Released: $FORMATTED_DATE)." >> "$VERSIONED_CASK"
+          echo "      For the latest version, use: brew install yaklang/yakit" >> "$VERSIONED_CASK"
+          echo "      " >> "$VERSIONED_CASK"
+          echo "      Note: Only one version of Yakit can be installed at a time." >> "$VERSIONED_CASK"
+          echo "      To switch versions, uninstall the current version first:" >> "$VERSIONED_CASK"
+          echo "        brew uninstall --cask yakit" >> "$VERSIONED_CASK"
+          echo "    EOS" >> "$VERSIONED_CASK"
+          echo "  end" >> "$VERSIONED_CASK"
+          echo "end" >> "$VERSIONED_CASK"
+          echo "✅ Created $VERSIONED_CASK"
+        else
+          echo "ℹ️  Versioned cask already exists: $VERSIONED_CASK"
+        fi
 
         echo ""
         echo "🎉 Version files updated successfully!"
