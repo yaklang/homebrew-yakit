@@ -31,6 +31,8 @@ brew install yaklang/yakit
 YAKIT_VERSION=1.4.4-0912 brew install --cask yaklang/yakit
 ```
 
+> **Note**: Homebrew doesn't support `brew install yakit@version` syntax. Use environment variables instead.
+
 ### Alternative Installation Methods
 
 First tap the repository:
@@ -49,8 +51,34 @@ brew install yakit
 
 - ✅ **Multi-Architecture Support**: Automatically detects ARM64 (M1/M2) or Intel chips
 - ✅ **Version Flexibility**: Support for latest, specific, or default versions
-- ✅ **Auto Updates**: Built-in livecheck for version updates
+- ✅ **Auto Updates**: Built-in livecheck for version updates + GitHub Actions automation
 - ✅ **Clean Uninstall**: Includes zap stanza for complete removal
+
+## Automation
+
+This repository includes automated version checking via GitHub Actions:
+
+- **Daily Checks**: Runs every day at 8:00 AM UTC to check for new Yakit releases
+- **Automatic PRs**: Creates pull requests when new versions are detected
+- **Validation**: Verifies cask syntax and download URLs before creating PRs
+- **Manual Trigger**: Can be manually triggered from GitHub Actions tab
+
+### Workflow Details
+
+The automation workflow (`.github/workflows/update-yakit.yml`):
+1. Fetches the latest version from the official Yakit version endpoint
+2. Compares with the current version in the cask
+3. Updates the cask file if a newer version is found
+4. Validates the cask syntax
+5. Creates a pull request for review
+
+### Manual Update
+
+You can also manually trigger the update workflow:
+1. Go to the **Actions** tab in this repository
+2. Select **"Update Yakit Version"** workflow
+3. Click **"Run workflow"**
+4. Optionally enable **"Force update"** to update even if versions match
 
 ## What is Yakit?
 
