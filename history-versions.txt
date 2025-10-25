@@ -12,3 +12,4 @@
 1.4.4-0928|2025-09-29|github-auto-update
 1.4.4-1011|2025-10-12|github-auto-update
 1.4.4-1017|2025-10-18|github-auto-update
+1.4.4-1024|2025-10-25|github-auto-update
