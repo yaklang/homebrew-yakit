@@ -14,3 +14,4 @@
 1.4.4-1017|2025-10-18|github-auto-update
 1.4.4-1024|2025-10-25|github-auto-update
 1.0.0-1030-irify|2025-10-31|github-auto-update
+1.4.4-1031|2025-11-01|github-auto-update
