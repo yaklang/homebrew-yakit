@@ -21,3 +21,4 @@
 1.4.5-1115|2025-11-15|github-auto-update
 1.4.5-1122|2025-11-22|github-auto-update
 1.4.5-1124|2025-11-25|github-auto-update
+1.2.0-1124-irify|2025-11-26|github-auto-update
