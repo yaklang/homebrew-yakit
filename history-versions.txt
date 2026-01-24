@@ -31,3 +31,4 @@
 1.4.5-1226|2025-12-27|github-auto-update
 1.4.5-0109|2026-01-10|github-auto-update
 1.4.6-0116|2026-01-17|github-auto-update
+1.4.6-0123|2026-01-24|github-auto-update
