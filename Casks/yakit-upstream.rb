@@ -1,5 +1,5 @@
 cask "yakit" do
-  version "1.2.2-0309-irify"
+  version "1.4.6-0313"
   sha256 :no_check
 
   url "https://oss-qn.yaklang.com/yak/#{version}/Yakit-#{version}-darwin-#{Hardware::CPU.intel? ? "x64" : "arm64"}.dmg"
