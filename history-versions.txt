@@ -46,3 +46,4 @@
 1.4.6-0417|2026-04-18|github-auto-update
 1.4.7-0424|2026-04-25|github-auto-update
 1.4.7-0429|2026-04-30|github-auto-update
+1.4.7-0509|2026-05-10|github-auto-update
