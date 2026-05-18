@@ -48,3 +48,4 @@
 1.4.7-0429|2026-04-30|github-auto-update
 1.4.7-0509|2026-05-10|github-auto-update
 1.4.7-0515|2026-05-16|github-auto-update
+1.4.7-0518|2026-05-18|github-auto-update
