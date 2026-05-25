@@ -50,3 +50,4 @@
 1.4.7-0515|2026-05-16|github-auto-update
 1.4.7-0518|2026-05-18|github-auto-update
 1.4.7-0522|2026-05-22|github-auto-update
+1.4.7-0525|2026-05-25|github-auto-update
