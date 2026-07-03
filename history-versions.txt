@@ -57,3 +57,4 @@
 1.4.7-0618|2026-06-19|github-auto-update
 1.4.7-0626|2026-06-27|github-auto-update
 1.4.7-0630|2026-06-30|github-auto-update
+1.4.8-0703|2026-07-03|github-auto-update
