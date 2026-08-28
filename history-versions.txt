@@ -69,3 +69,4 @@
 1.4.8-0817|2026-08-18|github-auto-update
 1.4.8-0821|2026-08-22|github-auto-update
 1.4.8-0825|2026-08-26|github-auto-update
+1.4.8-0828|2026-08-28|github-auto-update
