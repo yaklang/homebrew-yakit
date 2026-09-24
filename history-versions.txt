@@ -73,3 +73,4 @@
 1.4.8-0905|2026-09-04|github-auto-update
 1.4.8-0911|2026-09-11|github-auto-update
 1.4.8-0919|2026-09-19|github-auto-update
+1.4.9-0925|2026-09-24|github-auto-update
